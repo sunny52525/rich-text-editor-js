@@ -1,0 +1,22 @@
+*{
+    padding:0;
+    margin:0;
+    box-sizing: border-box;
+}
+
+button{
+    border: none;
+    outline: none;
+    cursor: pointer;
+    width: 32px;
+    margin-left: 10px;
+    height: 32px;
+
+}
+
+#textOut{
+    width: 800px;
+    height: 400px;
+    margin: 10px;
+
+}

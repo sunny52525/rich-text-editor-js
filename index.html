@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>RichTextEditor</title>
+    <link rel="stylesheet" href="./style.css">
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.2/css/all.css"
+          integrity="sha384-fnmOCqbTlWIlj8LyTjo7mOUStjsKC4pOpQbqyi7RrhN7udi9RwhKkMHpvLbHG9Sr" crossorigin="anonymous">
+
+</head>
+<body>
+
+
+<div class="editor">
+    <form action="">
+        <button type="button" data-cmd="alignRight"><i class="fas fa-align-right"></i></button>
+        <button type="button" data-cmd="alignLeft"><i class="fas fa-align-left"></i></button>
+        <button type="button" data-cmd="alignCenter"><i class="fas fa-align-center"></i></button>
+        <button type="button" data-cmd="alignFull"><i class="fas fa-align-justify"></i></button>
+        <button type="button" data-cmd="bold"><i class="fas fa-bold"></i></button>
+        <button type="button" data-cmd="italic"><i class="fas fa-italic"></i></button>
+        <button type="button" data-cmd="underline"><i class="fas fa-underline"></i></button>
+        <button type="button" data-cmd="unorderedList"><i class="fas fa-list-ul"></i></button>
+        <button type="button" data-cmd="orderedList"><i class="fas fa-list-ol"></i></button>
+        <button type="button" data-cmd="insertLink"><i class="fas fa-link"></i></button>
+        <button type="button" data-cmd="insertCode"><i class="fas fa-code"></i></button>
+
+    </form>
+    <iframe id="textOut"  name="textField"></iframe>
+</div>
+</body>
+<script src="./index.js"></script>
+</html>
