@@ -162,6 +162,7 @@ class richTextView extends EventEmitter {
 
                     console.log(editor.innerText.substring(0,editor.innerText.length-keyword.trim().length))
                     editor.innerText = editor.innerText.substring(0,editor.innerText.length-keyword.trim().length)+ obj.body
+                    this.setCaretToEnd(editor)
                 }
             }
         } else {
@@ -169,6 +170,19 @@ class richTextView extends EventEmitter {
         }
     }
 
+    setCaretToEnd(target) {
+        const range = document.createRange();
+        const sel = window.getSelection();
+        range.selectNodeContents(target);
+        range.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(range);
+        target.focus();
+        range.detach(); // optimization
+
+        // set scroll to the end if multiline
+        target.scrollTop = target.scrollHeight;
+    }
 
     removeSpecialCharacters(keyword){
         // console.log(keyword)
