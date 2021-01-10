@@ -1,5 +1,5 @@
 const myHTML = [
-    '<div class="editor"> <form action="">' +
+    '<div class="editor" id="editor"> <form action="">' +
     ' <button type="button" data-cmd="justifyRight"><i class="fas fa-align-right"></i></button> ' +
     '<button type="button" data-cmd="justifyLeft"><i class="fas fa-align-left"></i></button>' +
     ' <button type="button" data-cmd="justifyCenter"><i class="fas fa-align-center"></i></button>  ' +
@@ -92,7 +92,7 @@ class richTextView extends EventEmitter {
         super();
         this.model = model
         this.elements = elements
-        console.log(this.elements.buttons.length)
+        console.log(this.elements)
 
 
         textField.document.designMode = "On"
@@ -116,7 +116,18 @@ class richTextView extends EventEmitter {
         })
 
 
+        this.elements.editor.addEventListener('keyup', () => {
+            console.log("asd")
+            this.emit("editing", this.elements.editor)
+        })
 
+       document.addEventListener('keydown', (evt) => {
+            console.log("what"+evt.keyCode  )
+            if (evt.keyCode === 9) {
+                evt.preventDefault()
+                this.emit("complete", this.elements.editor)
+            }
+        })
     }
 
     showCode() {
@@ -148,6 +159,34 @@ class richTextView extends EventEmitter {
 
     }
 
+    changeContent(editor) {
+        editor.textContent=editor.value
+    }
+
+    checkSuggestion(keyword,editor){
+        if (this._isContains(snippets, keyword)) {
+            for (let i = 0; i < snippets.length; ++i) {
+                const obj = snippets[i];
+                // console.log(obj)
+                if (obj.prefix === keyword) {
+                    console.log(editor.value.substring(0, editor.value.length - keyword.length))
+                    editor.setRangeText(obj.body.toString().substring(keyword.length, obj.body.toString().length - 1), editor.selectionStart, editor.selectionEnd, "end");
+                }
+            }
+        } else {
+            console.log("Nope")
+        }
+    }
+
+    _isContains(json, value) {
+        // console.log(value +"val")
+        let contains = false;
+        Object.keys(json).some(key => {
+            contains = typeof json[key] === 'object' ? _isContains(json[key], value) : json[key] === value;
+            return contains;
+        });
+        return contains;
+    }
 }
 
 class richController {
@@ -159,6 +198,21 @@ class richController {
         view.on("showCode", () => this.showCode())
         view.on("other", command => this.otherActions(command))
         view.on("save", () => this.saveHtml())
+        view.on("editing", (editor) => this.changeContent(editor))
+        view.on("complete", (editor) => this.complete(editor))
+    }
+
+    changeContent(editor) {
+
+        this._view.changeContent(editor)
+    }
+
+
+    complete(editor) {
+        let val = editor.value.trim()
+        const input = val.split(" ");
+        console.log(input)
+        this._view.checkSuggestion(input[input.length - 1],editor);
     }
 
     createLink(cmd) {
@@ -194,8 +248,10 @@ window.addEventListener('load', () => {
             'buttons': document.querySelectorAll('button'),
             'saveButton': document.getElementById('save'),
             'body': document.getElementsByTagName('body')[0],
-            'editor': document.getElementById('editor')
+            'editor': document.getElementById('editor'),
+            'document':document
 
         }),
         controller = new richController(view, model)
+
 });
