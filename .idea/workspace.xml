@@ -14,9 +14,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="5d2d8d13-553f-4f32-b650-0286124b0d70" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/htmlcontent.js" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/index.html" beforeDir="false" afterPath="$PROJECT_DIR$/index.html" afterDir="false" />
       <change beforePath="$PROJECT_DIR$/index.js" beforeDir="false" afterPath="$PROJECT_DIR$/index.js" afterDir="false" />
     </list>
     <option name="SHOW_DIALOG" value="false" />
@@ -66,7 +64,8 @@
       <option name="presentableId" value="Default" />
       <updated>1609845063570</updated>
       <workItem from="1609845064831" duration="6966000" />
-      <workItem from="1609909291253" duration="3543000" />
+      <workItem from="1609909291253" duration="4943000" />
+      <workItem from="1610261046241" duration="6737000" />
     </task>
     <servers />
   </component>
@@ -83,11 +82,16 @@
         </entry>
       </map>
     </option>
+    <option name="oldMeFiltersMigrated" value="true" />
   </component>
   <component name="WindowStateProjectService">
     <state x="740" y="261" key="FileChooserDialogImpl" timestamp="1609847800815">
       <screen x="0" y="0" width="1920" height="1040" />
     </state>
     <state x="740" y="261" key="FileChooserDialogImpl/0.0.1920.1040@0.0.1920.1040" timestamp="1609847800815" />
+    <state x="616" y="240" key="run.anything.popup" timestamp="1610264727969">
+      <screen x="0" y="0" width="1920" height="1040" />
+    </state>
+    <state x="616" y="240" key="run.anything.popup/0.0.1920.1040@0.0.1920.1040" timestamp="1610264727969" />
   </component>
 </project>
