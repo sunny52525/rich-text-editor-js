@@ -18,7 +18,38 @@ const myHTML = [
     '</div>' +
     '<button id="save">Save</button>'
 ]
+const snippets = [
 
+    {
+        prefix: "for",
+        body: ["for (let i = 0; i < size; i++) { \n }  \n "]
+    },
+    {
+        prefix: "foreach",
+        "body": [
+            "array.forEach(element => { \n});\n "
+        ]
+    },
+    {
+
+        "prefix": "function",
+        "body": [
+            "function name (params)\n {\n }\n "
+        ]
+    },
+    {
+        "prefix": "if",
+        "body": [
+            "if (condition) {\n }\n "
+        ],
+    },
+    {
+        "prefix": "log",
+        "body": [
+            "console.log();"
+        ],
+    }
+];
 
 
 class EventEmitter {
@@ -43,41 +74,12 @@ class richTextModel extends EventEmitter {
         this.show = show
 
     }
-    addLink(url, cmd) {
-        console.log(cmd)
-        textField.document.execCommand(cmd, false, null)
-        const links = textField.document.querySelectorAll('a')
-        links.forEach(link => {
-            link.addEventListener('mouseover', () => {
-                textField.document.designMode = "Off"
-            })
-            link.addEventListener('mouseout', () => {
-                textField.document.designMode = "On";
-            })
-            link.target = "_blank";
-        })
-    }
-
-    showHtml() {
-        const text = textField.document.querySelector('body');
-        if (this.show) {
-            text.innerHTML = text.textContent
-        } else {
-            text.textContent = text.innerHTML
-        }
-        this.show = !this.show
-
-    }
-
-    otherCommands(command) {
-        textField.document.execCommand(command, false, null)
-    }
 
     saveHtml() {
-        let textContent=textField.document.querySelector('body');
+        let textContent = textField.document.querySelector('body');
         const a = document.createElement('a');
         const file = new Blob([textContent.innerHTML], {type: 'html'});
-        a.href= URL.createObjectURL(file);
+        a.href = URL.createObjectURL(file);
         a.download = 'test.txt';
         a.click();
         URL.revokeObjectURL(a.href);
@@ -91,10 +93,8 @@ class richTextView extends EventEmitter {
         this.model = model
         this.elements = elements
         console.log(this.elements.buttons.length)
-        let k = 0;
-        this.elements.buttons[k].addEventListener('click', () => {
-            console.log("oops")
-        })
+
+
         textField.document.designMode = "On"
         this.elements.buttons.forEach((item) => {
             item.addEventListener('click', () => {
@@ -110,15 +110,42 @@ class richTextView extends EventEmitter {
             })
         })
 
+
         this.elements.saveButton.addEventListener('click', () => {
             this.emit("save")
         })
 
+
+
     }
 
-    show() {
-        console.log("show")
-        this.elements.body.innerHTML = JSON.parse(JSON.stringify(myHTML))
+    showCode() {
+        const text = textField.document.querySelector('body');
+        if (this.show) {
+            text.innerHTML = text.textContent
+        } else {
+            text.textContent = text.innerHTML
+        }
+        this.show = !this.show
+    }
+
+    createLink(cmd, url) {
+        textField.document.execCommand(cmd, false, url)
+        const links = textField.document.querySelectorAll('a')
+        links.forEach(link => {
+            link.addEventListener('mouseover', () => {
+                textField.document.designMode = "Off"
+            })
+            link.addEventListener('mouseout', () => {
+                textField.document.designMode = "On";
+            })
+            link.target = "_blank";
+        })
+    }
+
+    otherActions(command) {
+        textField.document.execCommand(command, false, null)
+
     }
 
 }
@@ -137,20 +164,21 @@ class richController {
     createLink(cmd) {
         let url = window.prompt("Url?")
         if (url) {
-            this._model.addLink(url, cmd)
+            console.log(cmd)
+            this._view.createLink(cmd, url)
         }
     }
 
     showCode() {
-        this._model.showHtml()
+        this._view.showCode()
+
     }
 
     otherActions(command) {
-        this._model.otherCommands(command)
+        this._view.otherActions(command)
     }
 
     saveHtml() {
-
         this._model.saveHtml()
     }
 }
@@ -165,7 +193,8 @@ window.addEventListener('load', () => {
         view = new richTextView(model, {
             'buttons': document.querySelectorAll('button'),
             'saveButton': document.getElementById('save'),
-            'body': document.getElementsByTagName('body')[0]
+            'body': document.getElementsByTagName('body')[0],
+            'editor': document.getElementById('editor')
 
         }),
         controller = new richController(view, model)
