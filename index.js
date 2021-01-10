@@ -155,13 +155,16 @@ class richTextView extends EventEmitter {
     }
 
     checkSuggestion(keyword, editor) {
-        if (this._isContains(snippets, keyword)) {
+        keyword=this.removeSpecialCharacters(keyword.trim());
+        if (this._isContains(snippets,keyword )){
+            // console.log(snippets)
             for (let i = 0; i < snippets.length; ++i) {
-                const obj = snippets[i];
-                // console.log(obj)
-                if (obj.prefix === keyword) {
-                    console.log(editor.innerText.substring(0, editor.innerText.length - keyword.length))
 
+                const obj = snippets[i];
+                // console.log(obj.prefix+" "+keyword)
+
+                if (obj.prefix === keyword.trim()) {
+                    // console.log(editor.innerText.substring(0, editor.innerText.length - keyword.length))
                     const text = obj.body.toString().substring(keyword.length, obj.body.toString().length - 1);
                     let sel, range;
                     if (window.getSelection) {
@@ -181,10 +184,18 @@ class richTextView extends EventEmitter {
         }
     }
 
+
+    removeSpecialCharacters(keyword){
+        console.log(keyword)
+        const desired = keyword.replace(/[^\w\s]/gi, '');
+        console.log(desired.trim())
+        return desired
+    }
     _isContains(json, value) {
+
         let contains = false;
         Object.keys(json).some(key => {
-            contains = typeof json[key] === 'object' ? this._isContains(json[key], value) : json[key] === value;
+            contains = typeof json[key] === 'object' ? this._isContains(json[key], value.trim()) : json[key] === value.trim();
             return contains;
         });
         return contains;
@@ -213,16 +224,16 @@ class richController {
     complete(editor) {
         let val = editor.innerText.trim()
         const input = val.split(" ");
-        console.log(input)
+        // console.log(input)
 
         this._view.checkSuggestion(input[input.length - 1], editor);
     }
 
     createLink(cmd) {
-        console.log("h")
+        // console.log("h")
         let url = window.prompt("Url?")
         if (url) {
-            console.log(cmd)
+            // console.log(cmd)
             this._view.createLink(cmd, url)
         }
     }
