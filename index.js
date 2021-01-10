@@ -25,22 +25,16 @@ const snippets = [
         body: ["for (let i = 0; i < size; i++) { \n }  \n "]
     },
     {
-        prefix: "foreach",
-        "body": [
-            "array.forEach(element => { \n});\n "
-        ]
-    },
-    {
 
         "prefix": "function",
         "body": [
-            "function name (params)\n {\n }\n "
+            "function  name (params)\n {\n }\n "
         ]
     },
     {
         "prefix": "if",
         "body": [
-            "if (condition) {\n }\n "
+            "if   (condition) {\n }\n "
         ],
     },
     {
@@ -92,7 +86,7 @@ class richTextView extends EventEmitter {
         super();
         this.model = model
         this.elements = elements
-        console.log(this.elements)
+        // console.log(this.elements)
 
 
         this.elements.buttons.forEach((item) => {
@@ -120,7 +114,7 @@ class richTextView extends EventEmitter {
 
 
         document.addEventListener('keydown', (evt) => {
-            console.log("what" + evt.keyCode)
+            // console.log("what" + evt.keyCode)
             if (evt.keyCode === 9) {
                 evt.preventDefault()
                 // console.log( this.elements.textField)
@@ -156,6 +150,7 @@ class richTextView extends EventEmitter {
 
     checkSuggestion(keyword, editor) {
         keyword=this.removeSpecialCharacters(keyword.trim());
+
         if (this._isContains(snippets,keyword )){
             // console.log(snippets)
             for (let i = 0; i < snippets.length; ++i) {
@@ -164,19 +159,9 @@ class richTextView extends EventEmitter {
                 // console.log(obj.prefix+" "+keyword)
 
                 if (obj.prefix === keyword.trim()) {
-                    // console.log(editor.innerText.substring(0, editor.innerText.length - keyword.length))
-                    const text = obj.body.toString().substring(keyword.length, obj.body.toString().length - 1);
-                    let sel, range;
-                    if (window.getSelection) {
-                        sel = window.getSelection();
-                        if (sel.getRangeAt && sel.rangeCount) {
-                            range = sel.getRangeAt(0);
-                            range.deleteContents();
-                            range.insertNode(document.createTextNode(text));
-                        }
-                    } else if (document.selection && document.selection.createRange) {
-                        document.selection.createRange().text = text;
-                    }
+
+                    console.log(editor.innerText.substring(0,editor.innerText.length-keyword.trim().length))
+                    editor.innerText = editor.innerText.substring(0,editor.innerText.length-keyword.trim().length)+ obj.body
                 }
             }
         } else {
@@ -186,13 +171,13 @@ class richTextView extends EventEmitter {
 
 
     removeSpecialCharacters(keyword){
-        console.log(keyword)
+        // console.log(keyword)
         const desired = keyword.replace(/[^\w\s]/gi, '');
-        console.log(desired.trim())
+        // console.log(desired.trim())
         return desired
     }
     _isContains(json, value) {
-
+        // console.log(value.trim())
         let contains = false;
         Object.keys(json).some(key => {
             contains = typeof json[key] === 'object' ? this._isContains(json[key], value.trim()) : json[key] === value.trim();
@@ -223,7 +208,7 @@ class richController {
 
     complete(editor) {
         let val = editor.innerText.trim()
-        const input = val.split(" ");
+        const input = val.split(/[^A-Za-z]/);
         // console.log(input)
 
         this._view.checkSuggestion(input[input.length - 1], editor);
