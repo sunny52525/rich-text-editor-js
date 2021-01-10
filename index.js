@@ -14,7 +14,7 @@ const myHTML = [
     '<button type="button" data-cmd="redo" name="active"><i class="fas fa-redo"></i></button> ' +
     '<button type="button" data-cmd="undo" name="active"><i class="fas fa-undo"></i></button> ' +
     '</form> ' +
-    '<iframe id="textOut"  name="textField"></iframe> ' +
+    '<div id="textOut" contenteditable="true"   name="textField"></div> ' +
     '</div>' +
     '<button id="save">Save</button>'
 ]
@@ -95,14 +95,17 @@ class richTextView extends EventEmitter {
         console.log(this.elements)
 
 
-        textField.document.designMode = "On"
         this.elements.buttons.forEach((item) => {
             item.addEventListener('click', () => {
                 let cmd = item.getAttribute('data-cmd');
+                console.log(cmd)
                 if (cmd === "createLink") {
+
                     this.emit("createLink", cmd)
                 } else {
                     this.emit("other", cmd)
+                    // console.log(cmd)
+
                 }
                 if (cmd === "showCode") {
                     this.emit("showCode")
@@ -116,22 +119,19 @@ class richTextView extends EventEmitter {
         })
 
 
-        this.elements.editor.addEventListener('keyup', () => {
-            console.log("asd")
-            this.emit("editing", this.elements.editor)
-        })
-
-       document.addEventListener('keydown', (evt) => {
-            console.log("what"+evt.keyCode  )
+        document.addEventListener('keydown', (evt) => {
+            console.log("what" + evt.keyCode)
             if (evt.keyCode === 9) {
                 evt.preventDefault()
-                this.emit("complete", this.elements.editor)
+                // console.log( this.elements.textField)
+                this.emit("complete", this.elements.textField)
             }
         })
     }
 
     showCode() {
-        const text = textField.document.querySelector('body');
+        const text = document.getElementById('textOut')
+
         if (this.show) {
             text.innerHTML = text.textContent
         } else {
@@ -141,36 +141,39 @@ class richTextView extends EventEmitter {
     }
 
     createLink(cmd, url) {
-        textField.document.execCommand(cmd, false, url)
-        const links = textField.document.querySelectorAll('a')
-        links.forEach(link => {
-            link.addEventListener('mouseover', () => {
-                textField.document.designMode = "Off"
-            })
-            link.addEventListener('mouseout', () => {
-                textField.document.designMode = "On";
-            })
-            link.target = "_blank";
-        })
+        const sText = document.getSelection();
+        document.execCommand('insertHTML', false, '<a href="' + url + '" target="_blank">' + sText + '</a>');
     }
 
     otherActions(command) {
-        textField.document.execCommand(command, false, null)
+        document.execCommand(command, false, null)
 
     }
 
     changeContent(editor) {
-        editor.textContent=editor.value
+        editor.textContent = editor.value
     }
 
-    checkSuggestion(keyword,editor){
+    checkSuggestion(keyword, editor) {
         if (this._isContains(snippets, keyword)) {
             for (let i = 0; i < snippets.length; ++i) {
                 const obj = snippets[i];
                 // console.log(obj)
                 if (obj.prefix === keyword) {
-                    console.log(editor.value.substring(0, editor.value.length - keyword.length))
-                    editor.setRangeText(obj.body.toString().substring(keyword.length, obj.body.toString().length - 1), editor.selectionStart, editor.selectionEnd, "end");
+                    console.log(editor.innerText.substring(0, editor.innerText.length - keyword.length))
+
+                    const text = obj.body.toString().substring(keyword.length, obj.body.toString().length - 1);
+                    let sel, range;
+                    if (window.getSelection) {
+                        sel = window.getSelection();
+                        if (sel.getRangeAt && sel.rangeCount) {
+                            range = sel.getRangeAt(0);
+                            range.deleteContents();
+                            range.insertNode(document.createTextNode(text));
+                        }
+                    } else if (document.selection && document.selection.createRange) {
+                        document.selection.createRange().text = text;
+                    }
                 }
             }
         } else {
@@ -179,10 +182,9 @@ class richTextView extends EventEmitter {
     }
 
     _isContains(json, value) {
-        // console.log(value +"val")
         let contains = false;
         Object.keys(json).some(key => {
-            contains = typeof json[key] === 'object' ? _isContains(json[key], value) : json[key] === value;
+            contains = typeof json[key] === 'object' ? this._isContains(json[key], value) : json[key] === value;
             return contains;
         });
         return contains;
@@ -209,13 +211,15 @@ class richController {
 
 
     complete(editor) {
-        let val = editor.value.trim()
+        let val = editor.innerText.trim()
         const input = val.split(" ");
         console.log(input)
-        this._view.checkSuggestion(input[input.length - 1],editor);
+
+        this._view.checkSuggestion(input[input.length - 1], editor);
     }
 
     createLink(cmd) {
+        console.log("h")
         let url = window.prompt("Url?")
         if (url) {
             console.log(cmd)
@@ -249,9 +253,12 @@ window.addEventListener('load', () => {
             'saveButton': document.getElementById('save'),
             'body': document.getElementsByTagName('body')[0],
             'editor': document.getElementById('editor'),
-            'document':document
+            'document': document,
+            'textField': document.getElementById('textOut')
 
         }),
         controller = new richController(view, model)
 
 });
+
+
